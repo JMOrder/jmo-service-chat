@@ -1,19 +1,15 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from "mongoose";
+import { Message } from './message.schema';
 
 @Schema()
 export class Room extends Document {
   @Prop()
-  room: string;
-  @Prop()
   createdBy: number;
   @Prop()
   createdAt: Date;
-  @Prop()
-  messages: [{
-    type: Types.ObjectId,
-    ref: "Message"
-  }]
+  @Prop([Message])
+  messages: Message[]
   @Prop()
   updatedAt: Date;
 }

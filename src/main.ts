@@ -3,11 +3,13 @@ import { NestFactory } from '@nestjs/core';
 import { AppLogger } from './shared/app-logger/app-logger.service';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import * as morgan from "morgan";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
   app.useLogger(app.get(AppLogger));
+  app.use(morgan('dev'));
   app.enableShutdownHooks();
   const options = new DocumentBuilder()
     .setTitle('JMOrder Chat API')

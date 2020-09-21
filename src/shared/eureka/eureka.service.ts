@@ -1,6 +1,7 @@
 import { Injectable, OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
 import { Eureka } from 'eureka-js-client';
 import { AppLogger } from '../app-logger/app-logger.service';
+import { networkInterfaces } from "os";
 
 @Injectable()
 export class EurekaService implements OnModuleInit, OnApplicationShutdown {
@@ -15,11 +16,11 @@ export class EurekaService implements OnModuleInit, OnApplicationShutdown {
         instanceId: "chat-service",
         ipAddr: "127.0.0.1",
         port: {
-          $: parseInt(process.env.PORT) || 3000,
+          $: parseInt(process.env.PORT) || 3002,
           "@enabled": true
         },
-        statusPageUrl: "http://localhost:3001/actuator/info",
-        healthCheckUrl: "http://localhost:3001/actuator/info",
+        statusPageUrl: "http://localhost:3002/actuator/info",
+        healthCheckUrl: "http://localhost:3002/actuator/info",
         vipAddress: "chat-service",
         dataCenterInfo: {
           "@class": "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
@@ -59,4 +60,18 @@ export class EurekaService implements OnModuleInit, OnApplicationShutdown {
       });
     });
   }
+  private getIPAddress() {
+  const interfaces = networkInterfaces();
+  for (const devName in interfaces) {
+    const iface = interfaces[devName];
+
+    for (let i = 0; i < iface.length; i++) {
+      const alias = iface[i];
+      if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal)
+        return alias.address;
+    }
+  }
+
+  return '0.0.0.0';
+}
 }
